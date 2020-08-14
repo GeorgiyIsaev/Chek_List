@@ -26,7 +26,7 @@ class question {
 	std::vector <answer> Answer;
 	std::string comment = "";
 public:
-	std::string getQuest() { return quest; }
+	std::string getQuest() const { return quest; }
 	void print();	//вывод на консоль
 
 	
@@ -38,12 +38,13 @@ public:
 	void writeTXT(std::ostream& os, int val);	//запись в файл
 	void writeHTML(std::ostream& os, int val);	//запись в файл
 
-	bool operator<(question& obj) {
+
+	bool operator<(const question& obj) const{
 		if(quest < obj.quest )
 			return true;
 		return false;		
 	}
-	bool operator==(question& obj) { 
+	bool operator==(const question& obj) const {
 		if (quest == obj.quest)
 			return true;
 		return false;

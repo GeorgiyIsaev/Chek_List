@@ -106,8 +106,18 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
 		switch (LOWORD(wParam))
-		{
+		{			
 		case IDN_NEXT:
+			char* text;
+			text = new char[255];			
+			GetDlgItemText(hwnd, IDN_ENEW, (LPSTR)text, 255);
+			//GetWindowText(hwndQ, (LPSTR)text,255);/*Вариант 2*/
+			//SendMessage(hwndQ, WM_GETTEXT, (WPARAM)255, (LPARAM)text);
+			Box_Quest.set_NameC() = text;
+			delete[] text;
+			
+			
+			
 			MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
 			EndDialog(hwnd, 0);
 			return TRUE;

@@ -5,19 +5,63 @@
 
 
 class cont_question {
-	std::set<question> conteiner;
+	std::vector<question> conteiner;
 	std::string name_conteiner;
 	std::string name_file;
 	std::vector<question>::iterator It;
 public:
 	void add_question();
+	bool add_quest(std::string temp){
+		question Q_temp;
+		if (if_have_Q(temp)) {
+			/*std::cout << "Этот вопрос уже есть!";*/
+			return false;
+		}
+		Q_temp.setQuest(temp);
+		return true;
+	}
+	void add_answer(std::string temp, bool b) {
+		//int p = 0;
+		//if (temp.find(";", p) != std::string::npos) {
+		//	if (Q_temp.getQuest().size() > 2) {
+		//		conteiner.push_back(Q_temp);
+		//		Q_temp = question(); //пересоздать объект
+		//	}
+		//	Q_temp.setQuest(temp.substr(temp.find("ВОПРОС:") + 8));
+		//	std::cout << temp.substr(temp.find("ВОПРОС:") + 8) << std::endl;
+		//	std::cout << "+вопрос \n ";
+		//}
+		//
+		//
+		//
+		//int val = 1;
+		//while (val) {
+
+
+		//	std::string temp = "";
+		//	std::cout << "Введите ответ: ";
+		//	//cin.get();
+		//	std::getline(std::cin, temp_str);
+		//	bool set = 0;
+		//	std::cout << "[ Верно? (1-Да, 0-Нет) ][ Еще ответ? (1-Да, 0-Нет) ]\n";
+		//	(std::cin >> set >> val).get();
+		//	Q_temp.addAnswer(temp_str, set);
+		//}
+	}
+	void add_comment(std::string temp="") {
+		conteiner.at(conteiner.size() - 1).setComment(temp);
+		SORT();
+	}
+	void SORT() {std::sort(conteiner.rbegin(), conteiner.rend());}
 	int SIZE_BOX() { return conteiner.size(); }
 	std::string print_quest(int i) {
+		It = conteiner.begin();
+		advance(It, i);
 		std::string _i ="";
 		if (conteiner.size() > 99 && i < 99) _i = "0";
 		if (conteiner.size() > 9 && i < 9)	_i += "0";
-		_i += std::to_string(i+1) + ". ";
-		return _i + conteiner.at(i).getQuest();
+		_i += std::to_string(i+1) + ". "+ (*It).getQuest();
+		return _i;		
 	}
 	bool if_have_Q(std::string tmp);
 	void dell_question();
@@ -35,18 +79,6 @@ public:
 
 
 	std::string if_type_file();
-	/*HTML*/
-	//void NameFail_expansion() {
-	//	//string name_file;
-	//	if (name_file.size() >= 5 && name_file.find(".txt", name_file.size() - 4) != std::string::npos) {
-	//		return;
-	//	}
-	//	if (name_file.size() >= 6 && name_file.find(".html", name_file.size() - 5) != std::string::npos) {
-	//		return;
-	//	}
-	//	name_file += ".html";
-	//	return;
-	//}
 	std::string& set_NameC() {return name_conteiner;}
 	std::string& set_NameF() {return name_file;}
 
@@ -75,38 +107,38 @@ bool cont_question::if_have_Q(std::string tmp) {
 	if (It != conteiner.end()) return true;
 	else return false;
 }
-void cont_question::add_question() {
-	/*Тут получается Строитель, и в чтении из файла, данный класс Q_add выступает в роле директора, а строитеть question задает пункты постройки*/
-	question Q_temp;
-	std::string temp_str;
-	std::cout << "Введите вопрос: ";
-	std::getline(std::cin, temp_str);
-	if (if_have_Q(temp_str)) {
-		std::cout << "Этот вопрос уже есть!";
-		return;
-	}
-	Q_temp.setQuest(temp_str);
-	int val = 1;
-	while (val) {
-		std::string temp = "";
-		std::cout << "Введите ответ: ";
-		//cin.get();
-		std::getline(std::cin, temp_str);
-		bool set = 0;
-		std::cout << "[ Верно? (1-Да, 0-Нет) ][ Еще ответ? (1-Да, 0-Нет) ]\n";
-		(std::cin >> set >> val).get();
-		Q_temp.addAnswer(temp_str, set);
-	}
-	std::cout << "Трубуется ли пояснение (1-Да, 0-Нет) --> ";
-	bool set = 0;	(std::cin >> set).get();
-	if (set) {
-		std::cout << "КОМЕНТАРИЙ -> ";
-		std::getline(std::cin, temp_str);
-		Q_temp.setComment(temp_str);
-	}
-	conteiner.push_back(Q_temp);
-	/*В последствии методы ввода будут разбиты между текстовыем окнами приложения*/
-}
+//void cont_question::add_question() {
+//	/*Тут получается Строитель, и в чтении из файла, данный класс Q_add выступает в роле директора, а строитеть question задает пункты постройки*/
+//	question Q_temp;
+//	std::string temp_str;
+//	std::cout << "Введите вопрос: ";
+//	std::getline(std::cin, temp_str);
+//	if (if_have_Q(temp_str)) {
+//		std::cout << "Этот вопрос уже есть!";
+//		return;
+//	}
+//	Q_temp.setQuest(temp_str);
+//	int val = 1;
+//	while (val) {
+//		std::string temp = "";
+//		std::cout << "Введите ответ: ";
+//		//cin.get();
+//		std::getline(std::cin, temp_str);
+//		bool set = 0;
+//		std::cout << "[ Верно? (1-Да, 0-Нет) ][ Еще ответ? (1-Да, 0-Нет) ]\n";
+//		(std::cin >> set >> val).get();
+//		Q_temp.addAnswer(temp_str, set);
+//	}
+//	std::cout << "Трубуется ли пояснение (1-Да, 0-Нет) --> ";
+//	bool set = 0;	(std::cin >> set).get();
+//	if (set) {
+//		std::cout << "КОМЕНТАРИЙ -> ";
+//		std::getline(std::cin, temp_str);
+//		Q_temp.setComment(temp_str);
+//	}
+//	conteiner.emplace(Q_temp);
+//	/*В последствии методы ввода будут разбиты между текстовыем окнами приложения*/
+//}
 class Q_add :public command {	
 public:
 	Q_add() {opisanie = "Добавить новый вопрос. ";}
@@ -118,60 +150,60 @@ public:
 
 
 
-void cont_question::dell_question() {
-	std::cout << "Введите номер удаляемого вопроса --> ";
-	int val; (std::cin >> val).get();
-	if (val<0 || val >conteiner.size()) {
-		std::cout << "Вопроса с таким номером нет!\n";
-		return;
-	}
-	conteiner.erase(conteiner.begin()+val);
-}
-class Q_dell :public command {
-public:
-	Q_dell() { opisanie = "Удалить вопрос. "; }
-	virtual void execute(cont_question& temp) {
-		temp.add_question();
-	}
-};
+//void cont_question::dell_question() {
+//	std::cout << "Введите номер удаляемого вопроса --> ";
+//	int val; (std::cin >> val).get();
+//	if (val<0 || val >conteiner.size()) {
+//		std::cout << "Вопроса с таким номером нет!\n";
+//		return;
+//	}
+//	conteiner.erase(conteiner.begin()+val);
+//}
+//class Q_dell :public command {
+//public:
+//	Q_dell() { opisanie = "Удалить вопрос. "; }
+//	virtual void execute(cont_question& temp) {
+//		temp.add_question();
+//	}
+//};
 
 
 
 
-void cont_question::print_one() {
-	std::cout << "Введите номер вопроса --> ";
-	int val; (std::cin >> val).get();
-	if (val>=0 && val < conteiner.size()) {	
-		It = conteiner.begin();
-		advance(It, val);
-		std::cout << val << ". ";
-		(*It).print();
-	}
-	else {
-		std::cout << "Вопроса с таким номером нет!\n";
-	}
-}
-class Q_print_one :public command {
-public:
-	Q_print_one() { opisanie = "Показать один вопрос. "; }
-	virtual void execute(cont_question& temp) {
-		temp.print_one();
-	}
-};
+//void cont_question::print_one() {
+//	std::cout << "Введите номер вопроса --> ";
+//	int val; (std::cin >> val).get();
+//	if (val>=0 && val < conteiner.size()) {	
+//		It = conteiner.begin();
+//		advance(It, val);
+//		std::cout << val << ". ";
+//		(*It).print();
+//	}
+//	else {
+//		std::cout << "Вопроса с таким номером нет!\n";
+//	}
+//}
+//class Q_print_one :public command {
+//public:
+//	Q_print_one() { opisanie = "Показать один вопрос. "; }
+//	virtual void execute(cont_question& temp) {
+//		temp.print_one();
+//	}
+//};
 
 
-void cont_question::print_full() {
-	for (question tmp : conteiner) {
-		tmp.print();
-	}
-}
-class Q_print_full :public command {
-public:
-	Q_print_full() { opisanie = "Показать все вопросы. "; }
-	virtual void execute(cont_question& temp) {
-		temp.print_full();
-	}
-};
+//void cont_question::print_full() {
+//	for (question tmp : conteiner) {
+//		tmp.print();
+//	}
+//}
+//class Q_print_full :public command {
+//public:
+//	Q_print_full() { opisanie = "Показать все вопросы. "; }
+//	virtual void execute(cont_question& temp) {
+//		temp.print_full();
+//	}
+//};
 
 
 void cont_question::save_fileTXT() {
@@ -384,5 +416,6 @@ std::string cont_question::find_file()
 	catch (...) {
 		int i;
 	}
+	SORT();
 	return messege;
 }
