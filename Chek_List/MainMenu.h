@@ -10,6 +10,11 @@ class cont_question {
 	std::string name_file;
 	std::vector<question>::iterator It;
 public:
+	int count_RIGHT_answer() {
+		int count = 0;
+		for (answer x : (*It).getAnswers()) if (x.if_true()) count++;
+		return count;
+	}		 
 	std::string getQuest() {return (*It).getQuest();}
 	std::string getComment() { return (*It).getComment(); }
 	std::string getAnswer() { 
@@ -37,7 +42,9 @@ public:
 	}
 	
 	std::string getAnswer_val(int val) {
-		return std::to_string(val)+". "+(*It).getAnswer(val);
+		return (*It).getAnswer(val);
+		/*std::string temp = std::to_string(val)+". "+(*It).getAnswer(val);
+		return temp;*/
 	}
 	int size_answers() {
 		return (*It).size_answers();
@@ -52,6 +59,20 @@ public:
 	}
 	void add_question();
 	
+
+	std::string strInfoQuest(std::string info) {
+		info += "\r\nÇÀÄÀÍÍÛÉ ÂÎÏĞÎÑ: \r\n";
+		info+=(*It).getQuest(); info += "\r\n\r\n";
+		info += "ÂÅĞÍÛÅ ÎÒÂÅÒÛ: \r\n"; 
+		info += getAnswer(); info += "\r\n";
+		if ((*It).getComment() != "") {
+			info += "\r\nÊÎÌÅÍÒÀĞÈÉ:\r\n";
+			info += (*It).getComment(); info += "\r\n";
+		}
+		return info;
+	}
+
+
 
 	bool new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
 		question Quest_Obj;
@@ -101,6 +122,10 @@ public:
 		return true;
 	}	
 	
+	bool if_this_true_int(int i) {
+		return (*It).if_this_true_int(i);
+	}
+
 	void SORT() {std::sort(conteiner.rbegin(), conteiner.rend());}
 	int SIZE_BOX() { return conteiner.size(); }
 	std::string print_quest(int i) {

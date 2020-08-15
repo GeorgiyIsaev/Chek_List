@@ -1,8 +1,9 @@
 #include "MainMenu.h"  
 #include <windows.h>
 #include "resource.h"  //Подключаем ресусрс
-
+#define BIGBUFF 8192 
 cont_question Box_Quest;
+numers::info_test_create Box_val;
 
 /*Макрос для нормальной кнопки, по умолчанию win98*/
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -82,6 +83,8 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	    		MessageBox(hwnd, "В Чек_листе ноль вопросов!", "ИНФО", MB_OK | MB_ICONINFORMATION);				
 			}
 			else {
+				Box_val.reset();
+				Box_val.generator(Box_Quest.SIZE_BOX());
 				DialogBoxParam(hTest, MAKEINTRESOURCE(IDT_DIALOG), hwnd, DlgProc_TECT, 0);
 			}
 			//MessageBox(hwnd, "Была нажата кнопка TECT (Но я пока не разобрался с чекбоксами)", "ИНФО", MB_OK | MB_ICONINFORMATION);
@@ -103,8 +106,8 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 void new_quest_edit(HWND hwnd) {
 	/*к текстовым окнам привязываем их ид, и связь с главным окном */
 	std::string questSTR = "Введите вопрос № " + std::to_string(Box_Quest.SIZE_BOX() + 1);
-	char* quest = new char[255];
-	strcpy_s(quest, 255, questSTR.c_str());
+	char* quest = new char[BIGBUFF];
+	strcpy_s(quest, BIGBUFF, questSTR.c_str());
 	hwndQ = GetDlgItem(hwnd, IDN_ENEW);
 	hwndTrue = GetDlgItem(hwnd, IDN_ETRUE);
 	hwndFalsem = GetDlgItem(hwnd, IDN_EFALSE);
@@ -297,7 +300,7 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hwndComment, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)Comment);
 
 			Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
-			delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
+			delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;			
 			MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
 			SendMessage(hList, LB_RESETCONTENT, 0, 0);		
 			EndDialog(hwnd, 0);
@@ -313,49 +316,105 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
+
+//int val_index_box = 0;
+void reload_quest_test(HWND hwnd) {
+	
+	/*Генерируем номер вопроса*/
+	Box_Quest.It_this(Box_val.next_int_question());
+
+	/*Загружаем вопрос*/
+	int sizeCHAR = BIGBUFF;
+	char* quest = new char[sizeCHAR];
+	strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
+	SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
+	/*Загружаем ответы*/
+	Box_Quest.sort_answer_IT();
+
+	InvalidateRect(hList, NULL, TRUE); //очистить лист
+	h_Re_read = GetModuleHandle(NULL);
+	SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0);
+	hListAnswer = GetDlgItem(hwnd, IDT_ANSWER);
+	for (int i = 0; i < Box_Quest.size_answers(); i++) {
+		SendMessage(hListAnswer, LB_ADDSTRING, 0, (LPARAM)Box_Quest.getAnswer_val(i).c_str());
+	}
+}
+
 BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
+	//std::string temp = "";
+	int cSelItems;
+	int cSelItemsInBuffer;
+	int aSelItems[100];
+	bool like;
 	switch (uMsg) //Обработчик сообщений
 	{
 	case WM_INITDIALOG:
 	{	
-			hwndQuestTest = GetDlgItem(hwnd, IDT_QUEST);
-			/*Генерируем номер вопроса*/
-			Box_Quest.It_this(0);
-			
-			/*Загружаем вопрос*/
-			int sizeCHAR = 2047;			
-			char* quest = new char[sizeCHAR];
-			strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
-			SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
-			/*Загружаем ответы*/
-			Box_Quest.sort_answer_IT();
-			
-			InvalidateRect(hList, NULL, TRUE); //очистить лист
-			h_Re_read = GetModuleHandle(NULL);
-			SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0);
-			hListAnswer = GetDlgItem(hwnd, IDT_ANSWER);
-			for (int i = 0; i < Box_Quest.size_answers(); i++) {
-				SendMessage(hListAnswer, LB_ADDSTRING, 0, (LPARAM)Box_Quest.getAnswer_val(i).c_str());
-			}
-
-			
-			/*Посылаем текст в текстовое поле hEdit1*/
-		
-			//strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
-			SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
-			break;
-		//}
-		//SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)"В прогрмме отсутствуют вопросы");
+		hwndQuestTest = GetDlgItem(hwnd, IDT_QUEST);
+		reload_quest_test(hwnd);
+		break;		
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
+		char* info;
 		switch (LOWORD(wParam))
 		{
-		case IDT_ANSWER_ENTERT:
-			EndDialog(hwnd, 0);
-			return TRUE;
+		case IDT_ANSWERS:
+			cSelItems = SendMessage(hListAnswer, LB_GETSELCOUNT, 0, 0);
+			cSelItemsInBuffer = SendMessage(hListAnswer, LB_GETSELITEMS, 512, (LPARAM)aSelItems);
+
+			if (cSelItemsInBuffer == 0) {
+				MessageBox(hwnd, "Нужно выбрать хотя бы один ответ", "ОШИБКА!", MB_OK | MB_ICONINFORMATION);
+				return TRUE;
+			}
+			info = new char[BIGBUFF];	
+			if (Box_Quest.count_RIGHT_answer() == cSelItemsInBuffer) {
+				for (int i = cSelItemsInBuffer - 1; i >= 0; i--)
+				{
+					//SendMessage(hListAnswer, LB_GETTEXT, aSelItems[i], (LPARAM)pszFileToDelete);				
+					//temp += std::to_string(aSelItems[i])+" - "+ pszFileToDelete +"\r\n";
+
+					if (!Box_Quest.if_this_true_int(aSelItems[i])) {
+						like = false;
+						break;
+					}
+					like = true;
+				}
+			}
+			else like = false;
+			//MessageBox(hwnd, temp.c_str(), "info", MB_OK | MB_ICONINFORMATION);
+			if (like) {
+				//Box_Quest.strInfoQuest("Ваш ответ верный");
+				strcpy_s(info, BIGBUFF, Box_Quest.strInfoQuest("Ваш ответ ВЕРНЫЙ!\r\n").c_str());
+				MessageBox(hwnd, info, "Правильный ответ!", NULL);
+				Box_val.right_answer();
+			}
+			else {
+				strcpy_s(info, BIGBUFF, Box_Quest.strInfoQuest("Ваш ответ НЕ верный").c_str());
+				MessageBox(hwnd, info, "Ваш ответ НЕ верный", MB_OK | MB_ICONHAND);
+			}
+			delete[] info;
+			//SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)info); //показать овтет
+			//SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0); //обнулить лист			
+			//return TRUE;
+			//break;
+		case IDT_NEXTANSWER:
+			//val_index_box++;			
+			//if (val_index_box >= Box_Quest.SIZE_BOX()) {
+			if(Box_val.if_stop()){				
+				char* quest = new char[BIGBUFF];
+				strcpy_s(quest, BIGBUFF, Box_val.finalSTR().c_str());
+
+
+				MessageBox(hwnd, quest, "info", MB_OK | MB_ICONINFORMATION);
+				EndDialog(hwnd, 0);
+				return TRUE;
+			}
+			else {								
+				reload_quest_test(hwnd);
+			}
 			break;
-		}
+		}	
 		break;
 	case WM_CLOSE:		//Обработка закрытия окна пользователя
 		EndDialog(hwnd, 0);

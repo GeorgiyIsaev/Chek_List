@@ -33,6 +33,8 @@ public:
 	std::string getAnswer(int val) { return Answer.at(val).getAnswer(); }
 	void print();	//вывод на консоль
 
+
+
 	void sortAnswer() {
 		sort(Answer.begin(), Answer.end(), [](answer& tmp1, answer& tmp2) {
 			if (tmp1.getVal() > tmp2.getVal())
@@ -40,7 +42,17 @@ public:
 			return false;		
 		});		
 	}
-	
+
+	bool if_this_true(std::string temp) {
+		for (int i = 0; i < Answer.size(); i++) {
+			if (Answer.at(i).getAnswer() == temp) return true;
+		}
+		return false;
+	}
+	bool if_this_true_int(int i) {
+		if (Answer.at(i).if_true() ) return true;		
+		return false;
+	}
 	bool if_true_answers() {
 		int i = Answer.size();
 		while (i--) {
@@ -149,30 +161,60 @@ void question::writeHTML(std::ostream& os, int val) {
 
 
 
-
+namespace numers{
+#pragma once
+#include <iostream> 
 #include <random> 
 
-/*КЛАСС С ИНФОРМАЦИЯ ДЛЯ ТЕСТА*/
-//class info_test {
-//	std::vector<int> qenerator_next_quest;
-//	//int SIZE_box;
-//	int next_Q = 0;
-//	//int countAnswer
-//public:
-//	bool if_stop() {
-//		if (next_Q >= 20) return true;
-//		return false;
-//	}
-//	int next_q() {	
-//		return qenerator_next_quest.at(next_Q++);
-//	}
-//	void generator(int size) {
-//		//SIZE_box = size;
-//		std::random_device rd;
-//		//std::mt19937 mt(rd());
-//		int val = 20;
-//		while (val--) {
-//			qenerator_next_quest.push_back(rd() % size);
-//		}
-//	}
-//}
+	//using namespace std;
+
+	/*КЛАСС С ИНФОРМАЦИЯ ДЛЯ ТЕСТА*/
+	class info_test_create {
+		std::vector<int> qenerator_next_quest;
+		//int SIZE_box;
+		int next_Q = 0;
+		int countAnswer = 0;
+	public:
+		void reset() {
+			qenerator_next_quest.clear();
+			next_Q = 0;
+			countAnswer = 0;
+		}
+		void right_answer() { countAnswer++; }
+		bool if_stop() {
+			if (next_Q >= 20) return true;
+			return false;
+		}
+		int next_int_question() {	
+			return qenerator_next_quest.at(next_Q++);
+		}
+		void generator(int size) {
+			//SIZE_box = size;
+			std::random_device rd;
+			//std::mt19937 mt(rd());
+			int val = 20;
+			while (val--) {
+				qenerator_next_quest.push_back(rd() % size);
+			}
+		}
+		std::string finalSTR() {
+			std::string info;
+			double proc = (countAnswer * 100.0)/ next_Q; 
+			std::string procSTR = std::to_string(proc);
+			procSTR.erase(4);
+			info = "ТЕСТ ЗАВЕРШЁН!\r\n \r\n";
+			info += "РЕЗУЛЬТАТ: ";
+			if (proc > 90.0) info += "отлично";
+			else if (proc > 60.0) info += "удовлетворительный";
+			else info += "не удовлетворительный";
+			info += "\r\n";
+
+			info += "Количество заданных вопросов: " + std::to_string(next_Q);
+			info += "\r\n";
+			info += "Количество верных ответов: " + std::to_string(countAnswer);
+			info += " (" + procSTR + " %)";
+			info += "\r\n";
+			return info;
+		}
+	};
+};
