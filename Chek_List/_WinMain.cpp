@@ -20,6 +20,11 @@ HWND hwndNameFile; //окно для ввода имяни файла
 /*ОКНО просмотра*/
 HINSTANCE h_Re_read;
 HWND hList; HWND hwnd_redact;
+
+/*Окна тестов*/
+HWND hListAnswer; HWND hwndQuestTest;
+
+
 /*ОКНО СОХРАНЕНИЯ ФАЙЛА*/
 HWND hwndNameSave, hwndHead; //окно для ввода имяни сохраняемого файла 
 
@@ -30,8 +35,8 @@ BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK DlgProc_new(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK DlgProc_file(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK DlgProc_Read(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK DlgProc_Redact(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK DlgProc_Test(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK DlgProc_Redact(HWND, UINT, WPARAM, LPARAM); 
+BOOL CALLBACK DlgProc_TECT(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK DlgProc_Save(HWND, UINT, WPARAM, LPARAM);
 
 
@@ -73,7 +78,13 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			DialogBoxParam(hRead, MAKEINTRESOURCE(IDR_DIALOG), hwnd, DlgProc_Read, 0);
 			break;
 		case IDM_TECT:
-			MessageBox(hwnd, "Была нажата кнопка TECT (Но я пока не разобрался с чекбоксами)", "ИНФО", MB_OK | MB_ICONINFORMATION);
+			if (Box_Quest.SIZE_BOX() < 1) {
+	    		MessageBox(hwnd, "В Чек_листе ноль вопросов!", "ИНФО", MB_OK | MB_ICONINFORMATION);				
+			}
+			else {
+				DialogBoxParam(hTest, MAKEINTRESOURCE(IDT_DIALOG), hwnd, DlgProc_TECT, 0);
+			}
+			//MessageBox(hwnd, "Была нажата кнопка TECT (Но я пока не разобрался с чекбоксами)", "ИНФО", MB_OK | MB_ICONINFORMATION);
 			break;
 		case IDM_SAVE:		
 			DialogBoxParam(hSave, MAKEINTRESOURCE(IDS_DIALOG), hwnd, DlgProc_Save, 0);
@@ -89,22 +100,29 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 
+void new_quest_edit(HWND hwnd) {
+	/*к текстовым окнам привязываем их ид, и связь с главным окном */
+	std::string questSTR = "Введите вопрос № " + std::to_string(Box_Quest.SIZE_BOX() + 1);
+	char* quest = new char[255];
+	strcpy_s(quest, 255, questSTR.c_str());
+	hwndQ = GetDlgItem(hwnd, IDN_ENEW);
+	hwndTrue = GetDlgItem(hwnd, IDN_ETRUE);
+	hwndFalsem = GetDlgItem(hwnd, IDN_EFALSE);
+	hwndComment = GetDlgItem(hwnd, IDN_ECOMMENT);
+	/*Посылаем текст в текстовое поле hEdit1*/
+	SendMessage(hwndQ, WM_SETTEXT, 0, (LPARAM)quest);
+	SendMessage(hwndTrue, WM_SETTEXT, 0, (LPARAM)"Введите ПРАВИЛЬНЫЕ ответы.\r\nКаждый ответ вводится с новой строки\r\nНовая строка->(CTRL+ENTER)");
+	SendMessage(hwndFalsem, WM_SETTEXT, 0, (LPARAM)"Введите НЕ ПРАВИЛЬНЫЕ ответы\r\nКаждый ответ вводится с новой строки\r\nНовая строка->(CTRL+ENTER)");
+	SendMessage(hwndComment, WM_SETTEXT, 0, (LPARAM)"Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!");
+
+}
 BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	switch (uMsg) //Обработчик сообщений
 	{
 	case WM_INITDIALOG:
 	{
-		/*к текстовым окнам привязываем их ид, и связь с главным окном */
-		hwndQ = GetDlgItem(hwnd, IDN_ENEW);
-		hwndTrue = GetDlgItem(hwnd, IDN_ETRUE);
-		hwndFalsem = GetDlgItem(hwnd, IDN_EFALSE);
-		hwndComment = GetDlgItem(hwnd, IDN_ECOMMENT);
-		/*Посылаем текст в текстовое поле hEdit1*/
-		SendMessage(hwndQ, WM_SETTEXT, 0, (LPARAM)"Введите вопрос");
-		SendMessage(hwndTrue, WM_SETTEXT, 0, (LPARAM)"Введите ПРАВИЛЬНЫЕ ответы.\r\nКаждый ответ вводится с новой строки\r\nНовая строка->(CTRL+ENTER)");
-		SendMessage(hwndFalsem, WM_SETTEXT, 0, (LPARAM)"Введите НЕ ПРАВИЛЬНЫЕ ответы\r\nКаждый ответ вводится с новой строки\r\nНовая строка->(CTRL+ENTER)");
-		SendMessage(hwndComment, WM_SETTEXT, 0, (LPARAM)"Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!");
+		new_quest_edit(hwnd);
 		break;
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
@@ -123,14 +141,20 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			SendMessage(hwndFalsem, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)AnAnswer);
 			char* Comment = new char[sizeCHAR];
 			SendMessage(hwndComment, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)Comment);
-					
-			Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
-			delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
-			MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
-			EndDialog(hwnd, 0);
-			return TRUE;
-			//DialogBoxParam(hNew_Q, MAKEINTRESOURCE(IDN_DIALOG), hwnd, DlgProc_new, 0);
-			
+				
+			if (Box_Quest.if_have_Q(quest)) {
+				MessageBox(hwnd, "Такой вопрос уже есть", "ИНФО", MB_OK | MB_ICONINFORMATION);
+			}
+			else {
+				Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
+				delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
+				new_quest_edit(hwnd);
+				/*MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
+				
+				EndDialog(hwnd, 0);
+				return TRUE;*/
+				//DialogBoxParam(hNew_Q, MAKEINTRESOURCE(IDN_DIALOG), hwnd, DlgProc_new, 0);
+			}
 			break;	
 		}
 		break;
@@ -177,20 +201,22 @@ BOOL CALLBACK DlgProc_file(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return FALSE;
 }
 
+void reset_list_question(HWND hwnd) {
+	InvalidateRect(hList, NULL, TRUE); //очистить лист
+	h_Re_read = GetModuleHandle(NULL);
+	SendMessage(hList, LB_RESETCONTENT, 0, 0);
+	hList = GetDlgItem(hwnd, IDR_LIST);
+	for (int i = 0; i < Box_Quest.SIZE_BOX(); i++) {		
+		SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)Box_Quest.print_quest(i).c_str());
+	}
+}
 BOOL CALLBACK DlgProc_Read(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	switch (uMsg) //Обработчик сообщений
 	{
 	case WM_INITDIALOG:
 	{
-		
-		h_Re_read = GetModuleHandle(NULL);
-		
-		hList = GetDlgItem(hwnd, IDR_LIST);
-		for (int i = 0; i < Box_Quest.SIZE_BOX(); i++) {
-			//std::string temp = std::to_string(i)+". ";
-			SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)Box_Quest.print_quest(i).c_str());
-		}		
+		reset_list_question(hwnd);
 		break;
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
@@ -204,12 +230,15 @@ BOOL CALLBACK DlgProc_Read(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				CHAR str_2[255];
 				int i = SendMessage(hList, LB_GETCURSEL, 0, 0);		
 				Box_Quest.It_this(i);
-				hwnd_redact = CreateDialog(h_Re_read, MAKEINTRESOURCE(IDR_DIALOG_RECORD), 0, DlgProc_Redact);
-				ShowWindow(hwnd_redact, SW_SHOW);
+				DialogBoxParam(h_Re_read, MAKEINTRESOURCE(IDR_DIALOG_RECORD), hwnd, DlgProc_Redact, 0);
+							
+				/*	hwnd_redact = CreateDialog(h_Re_read, MAKEINTRESOURCE(IDR_DIALOG_RECORD), 0, DlgProc_Redact);
+				ShowWindow(hwnd_redact, SW_SHOW);*/
 
+				reset_list_question(hwnd);
 				//SendMessage(hList, LB_GETTEXT, i, (LPARAM)str_2);
 				//MessageBox(hwnd, str_2, "info", NULL);
-			}		
+			}			
 		}
 		break;
 	case WM_CLOSE:		//Обработка закрытия окна пользователя
@@ -251,8 +280,8 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam))
 		{
 		case IDR_DELETE:
-			Box_Quest.dell_question();
-			EndDialog(hwnd, 0);
+			Box_Quest.dell_question();			
+			EndDialog(hwnd, 0);			
 			return TRUE;
 			break;
 		case IDR_SAVE_QUEST:	
@@ -270,10 +299,61 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
 			delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
 			MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
+			SendMessage(hList, LB_RESETCONTENT, 0, 0);		
 			EndDialog(hwnd, 0);
 			return TRUE;
+			break;
+		}
+		//InvalidateRect(NULL, NULL, TRUE);
+		break;
+	case WM_CLOSE:		//Обработка закрытия окна пользователя
+		EndDialog(hwnd, 0);
+		return TRUE;
+	}
+	return FALSE;
+}
 
+BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
+	switch (uMsg) //Обработчик сообщений
+	{
+	case WM_INITDIALOG:
+	{	
+			hwndQuestTest = GetDlgItem(hwnd, IDT_QUEST);
+			/*Генерируем номер вопроса*/
+			Box_Quest.It_this(0);
+			
+			/*Загружаем вопрос*/
+			int sizeCHAR = 2047;			
+			char* quest = new char[sizeCHAR];
+			strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
+			SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
+			/*Загружаем ответы*/
+			Box_Quest.sort_answer_IT();
+			
+			InvalidateRect(hList, NULL, TRUE); //очистить лист
+			h_Re_read = GetModuleHandle(NULL);
+			SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0);
+			hListAnswer = GetDlgItem(hwnd, IDT_ANSWER);
+			for (int i = 0; i < Box_Quest.size_answers(); i++) {
+				SendMessage(hListAnswer, LB_ADDSTRING, 0, (LPARAM)Box_Quest.getAnswer_val(i).c_str());
+			}
+
+			
+			/*Посылаем текст в текстовое поле hEdit1*/
+		
+			//strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
+			SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
+			break;
+		//}
+		//SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)"В прогрмме отсутствуют вопросы");
+	}
+	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
+		switch (LOWORD(wParam))
+		{
+		case IDT_ANSWER_ENTERT:
+			EndDialog(hwnd, 0);
+			return TRUE;
 			break;
 		}
 		break;
@@ -283,7 +363,6 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
-
 
 
 

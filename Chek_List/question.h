@@ -15,7 +15,7 @@ public:
 	answer(bool i, std::string A) : if_TRUE(i), Answer(A)   {
 		std::random_device rd;
 		random_nomer = rd() % 100;
-	}
+	}	
 	std::string getAnswer() { return Answer; }
 	int getVal() { return random_nomer; }
 	bool if_true() { return if_TRUE; }
@@ -26,11 +26,21 @@ class question {
 	std::vector <answer> Answer;
 	std::string comment = "";
 public:
+	int size_answers() { return Answer.size(); }
 	std::string getQuest() const { return quest; }
 	std::string getComment() const { return comment; }
 	std::vector <answer> getAnswers() { return Answer; }
+	std::string getAnswer(int val) { return Answer.at(val).getAnswer(); }
 	void print();	//‚˚‚Ó‰ Ì‡ ÍÓÌÒÓÎ¸
 
+	void sortAnswer() {
+		sort(Answer.begin(), Answer.end(), [](answer& tmp1, answer& tmp2) {
+			if (tmp1.getVal() > tmp2.getVal())
+				return true;
+			return false;		
+		});		
+	}
+	
 	bool if_true_answers() {
 		int i = Answer.size();
 		while (i--) {
@@ -54,7 +64,7 @@ public:
 
 
 	bool operator<(const question& obj) const{
-		if(quest < obj.quest )
+		if(quest > obj.quest )
 			return true;
 		return false;		
 	}
@@ -136,3 +146,33 @@ void question::writeHTML(std::ostream& os, int val) {
 	}
 	os << "<br/>\n";
 }
+
+
+
+
+#include <random> 
+
+/* À¿—— — »Õ‘Œ–Ã¿÷»ﬂ ƒÀﬂ “≈—“¿*/
+//class info_test {
+//	std::vector<int> qenerator_next_quest;
+//	//int SIZE_box;
+//	int next_Q = 0;
+//	//int countAnswer
+//public:
+//	bool if_stop() {
+//		if (next_Q >= 20) return true;
+//		return false;
+//	}
+//	int next_q() {	
+//		return qenerator_next_quest.at(next_Q++);
+//	}
+//	void generator(int size) {
+//		//SIZE_box = size;
+//		std::random_device rd;
+//		//std::mt19937 mt(rd());
+//		int val = 20;
+//		while (val--) {
+//			qenerator_next_quest.push_back(rd() % size);
+//		}
+//	}
+//}

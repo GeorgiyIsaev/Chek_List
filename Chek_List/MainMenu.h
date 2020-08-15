@@ -13,8 +13,7 @@ public:
 	std::string getQuest() {return (*It).getQuest();}
 	std::string getComment() { return (*It).getComment(); }
 	std::string getAnswer() { 
-		std::string Ans = "";
-		(*It).getAnswers(); 
+		std::string Ans = "";	
 		for (answer x : (*It).getAnswers()) {
 			if (x.if_true()) {
 				Ans += x.getAnswer();
@@ -37,15 +36,26 @@ public:
 		return Ans;
 	}
 	
+	std::string getAnswer_val(int val) {
+		return std::to_string(val)+". "+(*It).getAnswer(val);
+	}
+	int size_answers() {
+		return (*It).size_answers();
+	}
+	void sort_answer_IT() {
+		(*It).sortAnswer();
+	}	
 	//question& setQuestion() { return (*It); }
 	void It_this(int i) {
 		It = conteiner.begin();
 		advance(It, i);
 	}
 	void add_question();
+	
+
 	bool new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
 		question Quest_Obj;
-		if (!if_have_Q(Quest)) {
+		//if (!if_have_Q(Quest)) {
 			Quest_Obj.setQuest(Quest);
 			
 			int p = 0;
@@ -78,8 +88,8 @@ public:
 			conteiner.push_back(Quest_Obj);
 			SORT();
 			return true;
-		}
-		return false;
+		/*}
+		return false;*/
 	}
 	bool add_quest(std::string temp){
 		question Q_temp;

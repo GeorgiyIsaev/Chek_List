@@ -9,8 +9,8 @@
 #define IDS_DIALOG                      107
 #define IDI_ICON1                       109
 #define IDR_DIALOG                      110
-#define IDD_DIALOG1                     112
 #define IDR_DIALOG_RECORD               112
+#define IDT_DIALOG                      114
 #define IDM_SAVE                        1001
 #define IDM_ADDFILE                     1002
 #define IDM_TECT                        1003
@@ -33,14 +33,19 @@
 #define IDR_ETRUE                       1017
 #define IDR_EFALSE                      1018
 #define IDR_ECOMMENT                    1019
+#define IDT_ANSWER                      1020
+#define IDT_QUEST                       1021
+#define IDT_ANSWERS                     1023
+#define IDT_ANSWER_ENTERT3              1024
+#define IDT_NEXTANSWER                  1024
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        114
+#define _APS_NEXT_RESOURCE_VALUE        116
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
