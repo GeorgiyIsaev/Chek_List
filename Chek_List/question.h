@@ -27,7 +27,21 @@ class question {
 	std::string comment = "";
 public:
 	std::string getQuest() const { return quest; }
+	std::string getComment() const { return comment; }
+	std::vector <answer> getAnswers() { return Answer; }
 	void print();	//вывод на консоль
+
+	bool if_true_answers() {
+		int i = Answer.size();
+		while (i--) {
+			if (Answer.at(i).if_true()) return true;
+		}
+		return false;
+	}
+	bool if_no_one_answer() {
+		if (Answer.size() >= 2) return false;
+		return true;
+	}
 
 	
 	void setQuest(std::string Q);
@@ -78,7 +92,9 @@ void question::clearAnswer(){
 	Answer.clear();
 }
 void question::addAnswer(std::string A, bool t){
-	Answer.emplace_back(t, A);
+	answer tempAnswer(t,A);
+	Answer.push_back(tempAnswer);
+	//Answer.emplace_back(t, A);
 }
 void question::setComment(std::string C){
 	comment = C;

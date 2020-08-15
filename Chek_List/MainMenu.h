@@ -10,7 +10,77 @@ class cont_question {
 	std::string name_file;
 	std::vector<question>::iterator It;
 public:
+	std::string getQuest() {return (*It).getQuest();}
+	std::string getComment() { return (*It).getComment(); }
+	std::string getAnswer() { 
+		std::string Ans = "";
+		(*It).getAnswers(); 
+		for (answer x : (*It).getAnswers()) {
+			if (x.if_true()) {
+				Ans += x.getAnswer();
+				Ans += "\r\n";
+			}
+		}
+		Ans.erase(Ans.size()-1);
+		return Ans;
+	}
+	std::string getAnAnswer() {
+		std::string Ans = "";
+		(*It).getAnswers();
+		for (answer x : (*It).getAnswers()) {
+			if (!(x.if_true())) {
+				Ans += x.getAnswer();
+				Ans += "\r\n";
+			}
+		}
+		Ans.erase(Ans.size() - 1);
+		return Ans;
+	}
+	
+	//question& setQuestion() { return (*It); }
+	void It_this(int i) {
+		It = conteiner.begin();
+		advance(It, i);
+	}
 	void add_question();
+	bool new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
+		question Quest_Obj;
+		if (!if_have_Q(Quest)) {
+			Quest_Obj.setQuest(Quest);
+			
+			int p = 0;
+			while (Answer.find("\n", 0) != std::string::npos) {
+				if (Answer.find("\n", 0) != std::string::npos) {
+					p = Answer.find("\n", p)-1;
+					std::string temp = Answer.substr(0, p);
+					Answer.erase(0, p+2);
+					Quest_Obj.addAnswer(temp, true);
+				}
+			}
+			if(Answer.size()>0) Quest_Obj.addAnswer(Answer, true);
+
+			p = 0;
+			while (AnAnswer.find("\n", 0) != std::string::npos) {
+				if (AnAnswer.find("\n", 0) != std::string::npos) {
+					p = AnAnswer.find("\n", p)-1;
+					std::string temp = AnAnswer.substr(0, p);
+					AnAnswer.erase(0, p+2);
+					Quest_Obj.addAnswer(temp, false);
+				}
+			}
+			if (AnAnswer.size() > 0) Quest_Obj.addAnswer(AnAnswer, false);
+		
+			if (Comment == "Введите коментарий")Comment = "";
+			if (Comment == "Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!")Comment = "";
+			Quest_Obj.setComment(Comment);
+			if(!Quest_Obj.if_true_answers()) Quest_Obj.addAnswer("Нет верного ответа", true);
+			if (Quest_Obj.if_no_one_answer()) Quest_Obj.addAnswer("Нет верного ответа", false);
+			conteiner.push_back(Quest_Obj);
+			SORT();
+			return true;
+		}
+		return false;
+	}
 	bool add_quest(std::string temp){
 		question Q_temp;
 		if (if_have_Q(temp)) {
@@ -19,39 +89,8 @@ public:
 		}
 		Q_temp.setQuest(temp);
 		return true;
-	}
-	void add_answer(std::string temp, bool b) {
-		//int p = 0;
-		//if (temp.find(";", p) != std::string::npos) {
-		//	if (Q_temp.getQuest().size() > 2) {
-		//		conteiner.push_back(Q_temp);
-		//		Q_temp = question(); //пересоздать объект
-		//	}
-		//	Q_temp.setQuest(temp.substr(temp.find("ВОПРОС:") + 8));
-		//	std::cout << temp.substr(temp.find("ВОПРОС:") + 8) << std::endl;
-		//	std::cout << "+вопрос \n ";
-		//}
-		//
-		//
-		//
-		//int val = 1;
-		//while (val) {
-
-
-		//	std::string temp = "";
-		//	std::cout << "Введите ответ: ";
-		//	//cin.get();
-		//	std::getline(std::cin, temp_str);
-		//	bool set = 0;
-		//	std::cout << "[ Верно? (1-Да, 0-Нет) ][ Еще ответ? (1-Да, 0-Нет) ]\n";
-		//	(std::cin >> set >> val).get();
-		//	Q_temp.addAnswer(temp_str, set);
-		//}
-	}
-	void add_comment(std::string temp="") {
-		conteiner.at(conteiner.size() - 1).setComment(temp);
-		SORT();
-	}
+	}	
+	
 	void SORT() {std::sort(conteiner.rbegin(), conteiner.rend());}
 	int SIZE_BOX() { return conteiner.size(); }
 	std::string print_quest(int i) {
@@ -64,7 +103,8 @@ public:
 		return _i;		
 	}
 	bool if_have_Q(std::string tmp);
-	void dell_question();
+	bool dell_question();
+	bool dell_question(int);
 
 	void print_full();
 	void print_one();
@@ -107,58 +147,23 @@ bool cont_question::if_have_Q(std::string tmp) {
 	if (It != conteiner.end()) return true;
 	else return false;
 }
-//void cont_question::add_question() {
-//	/*Тут получается Строитель, и в чтении из файла, данный класс Q_add выступает в роле директора, а строитеть question задает пункты постройки*/
-//	question Q_temp;
-//	std::string temp_str;
-//	std::cout << "Введите вопрос: ";
-//	std::getline(std::cin, temp_str);
-//	if (if_have_Q(temp_str)) {
-//		std::cout << "Этот вопрос уже есть!";
-//		return;
-//	}
-//	Q_temp.setQuest(temp_str);
-//	int val = 1;
-//	while (val) {
-//		std::string temp = "";
-//		std::cout << "Введите ответ: ";
-//		//cin.get();
-//		std::getline(std::cin, temp_str);
-//		bool set = 0;
-//		std::cout << "[ Верно? (1-Да, 0-Нет) ][ Еще ответ? (1-Да, 0-Нет) ]\n";
-//		(std::cin >> set >> val).get();
-//		Q_temp.addAnswer(temp_str, set);
-//	}
-//	std::cout << "Трубуется ли пояснение (1-Да, 0-Нет) --> ";
-//	bool set = 0;	(std::cin >> set).get();
-//	if (set) {
-//		std::cout << "КОМЕНТАРИЙ -> ";
-//		std::getline(std::cin, temp_str);
-//		Q_temp.setComment(temp_str);
-//	}
-//	conteiner.emplace(Q_temp);
-//	/*В последствии методы ввода будут разбиты между текстовыем окнами приложения*/
-//}
-class Q_add :public command {	
-public:
-	Q_add() {opisanie = "Добавить новый вопрос. ";}
-	virtual void execute(cont_question& temp) {
-		temp.add_question();
+
+
+
+bool cont_question::dell_question() {
+	if (It != conteiner.end()) {
+		conteiner.erase(It);
+		return true;
 	}
-};
-
-
-
-
-//void cont_question::dell_question() {
-//	std::cout << "Введите номер удаляемого вопроса --> ";
-//	int val; (std::cin >> val).get();
-//	if (val<0 || val >conteiner.size()) {
-//		std::cout << "Вопроса с таким номером нет!\n";
-//		return;
-//	}
-//	conteiner.erase(conteiner.begin()+val);
-//}
+	return false;
+}
+bool cont_question::dell_question(int val) {	
+	if (val<0 || val >conteiner.size()) {	
+		return false;
+	}
+	conteiner.erase(conteiner.begin()+val);
+	return true;
+}
 //class Q_dell :public command {
 //public:
 //	Q_dell() { opisanie = "Удалить вопрос. "; }
