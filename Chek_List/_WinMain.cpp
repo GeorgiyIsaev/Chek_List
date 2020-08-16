@@ -18,7 +18,7 @@ HWND hwndQ, hwndTrue, hwndFalsem, hwndComment; //окна для создания вопроса
 /*ОКНО ОТКРЫТИЯ ФАЙЛА*/
 HWND hwndNameFile; //окно для ввода имяни файла
 
-/*ОКНО просмотра*/
+/*ОКНа просмотра*/
 HINSTANCE h_Re_read;
 HWND hList; HWND hwnd_redact;
 
@@ -69,11 +69,9 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		{
 		case IDM_NEW:
 			DialogBoxParam(hNew_Q, MAKEINTRESOURCE(IDN_DIALOG), hwnd, DlgProc_new, 0);
-			//MessageBox(hwnd, "Была нажата кнопка добавить впосрос", "это перовое", MB_OK | MB_ICONINFORMATION);
 			break;
 		case IDM_ADDFILE:
-			DialogBoxParam(hFile, MAKEINTRESOURCE(IDF_DIALOG), hwnd, DlgProc_file, 0);
-			//MessageBox(hwnd, "Была нажата кнопка добавить впосрос", "это перовое", MB_OK | MB_ICONINFORMATION);
+			DialogBoxParam(hFile, MAKEINTRESOURCE(IDF_DIALOG), hwnd, DlgProc_file, 0);			
 			break;
 		case IDM_READ:
 			DialogBoxParam(hRead, MAKEINTRESOURCE(IDR_DIALOG), hwnd, DlgProc_Read, 0);
@@ -151,12 +149,7 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			else {
 				Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
 				delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
-				new_quest_edit(hwnd);
-				/*MessageBox(hwnd, "Вопрос был сохранен", "ИНФО", MB_OK | MB_ICONINFORMATION);
-				
-				EndDialog(hwnd, 0);
-				return TRUE;*/
-				//DialogBoxParam(hNew_Q, MAKEINTRESOURCE(IDN_DIALOG), hwnd, DlgProc_new, 0);
+				new_quest_edit(hwnd);			
 			}
 			break;	
 		}
@@ -228,19 +221,11 @@ BOOL CALLBACK DlgProc_Read(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case IDR_LIST:		
 			if (HIWORD(wParam) == LBN_DBLCLK)
 			{
-				
-
-				CHAR str_2[255];
 				int i = SendMessage(hList, LB_GETCURSEL, 0, 0);		
 				Box_Quest.It_this(i);
 				DialogBoxParam(h_Re_read, MAKEINTRESOURCE(IDR_DIALOG_RECORD), hwnd, DlgProc_Redact, 0);
 							
-				/*	hwnd_redact = CreateDialog(h_Re_read, MAKEINTRESOURCE(IDR_DIALOG_RECORD), 0, DlgProc_Redact);
-				ShowWindow(hwnd_redact, SW_SHOW);*/
-
-				reset_list_question(hwnd);
-				//SendMessage(hList, LB_GETTEXT, i, (LPARAM)str_2);
-				//MessageBox(hwnd, str_2, "info", NULL);
+				reset_list_question(hwnd);				
 			}			
 		}
 		break;
@@ -324,9 +309,9 @@ void reload_quest_test(HWND hwnd) {
 	Box_Quest.It_this(Box_val.next_int_question());
 
 	/*Загружаем вопрос*/
-	int sizeCHAR = BIGBUFF;
-	char* quest = new char[sizeCHAR];
-	strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
+	//int sizeCHAR = BIGBUFF;
+	char* quest = new char[BIGBUFF];
+	strcpy_s(quest, BIGBUFF, Box_Quest.getQuest().c_str());
 	SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
 	/*Загружаем ответы*/
 	Box_Quest.sort_answer_IT();
@@ -338,6 +323,7 @@ void reload_quest_test(HWND hwnd) {
 	for (int i = 0; i < Box_Quest.size_answers(); i++) {
 		SendMessage(hListAnswer, LB_ADDSTRING, 0, (LPARAM)Box_Quest.getAnswer_val(i).c_str());
 	}
+	delete[] quest;
 }
 
 BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -371,9 +357,6 @@ BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			if (Box_Quest.count_RIGHT_answer() == cSelItemsInBuffer) {
 				for (int i = cSelItemsInBuffer - 1; i >= 0; i--)
 				{
-					//SendMessage(hListAnswer, LB_GETTEXT, aSelItems[i], (LPARAM)pszFileToDelete);				
-					//temp += std::to_string(aSelItems[i])+" - "+ pszFileToDelete +"\r\n";
-
 					if (!Box_Quest.if_this_true_int(aSelItems[i])) {
 						like = false;
 						break;
@@ -382,9 +365,8 @@ BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				}
 			}
 			else like = false;
-			//MessageBox(hwnd, temp.c_str(), "info", MB_OK | MB_ICONINFORMATION);
-			if (like) {
-				//Box_Quest.strInfoQuest("Ваш ответ верный");
+			
+			if (like) {				
 				strcpy_s(info, BIGBUFF, Box_Quest.strInfoQuest("Ваш ответ ВЕРНЫЙ!\r\n").c_str());
 				MessageBox(hwnd, info, "Правильный ответ!", NULL);
 				Box_val.right_answer();
@@ -394,18 +376,13 @@ BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				MessageBox(hwnd, info, "Ваш ответ НЕ верный", MB_OK | MB_ICONHAND);
 			}
 			delete[] info;
-			//SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)info); //показать овтет
-			//SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0); //обнулить лист			
-			//return TRUE;
-			//break;
+			/*Продолжаем выполнение без брейка*/
 		case IDT_NEXTANSWER:
-			//val_index_box++;			
-			//if (val_index_box >= Box_Quest.SIZE_BOX()) {
+			
 			if(Box_val.if_stop()){				
 				char* quest = new char[BIGBUFF];
 				strcpy_s(quest, BIGBUFF, Box_val.finalSTR().c_str());
-
-
+				
 				MessageBox(hwnd, quest, "info", MB_OK | MB_ICONINFORMATION);
 				EndDialog(hwnd, 0);
 				return TRUE;
@@ -435,8 +412,8 @@ BOOL CALLBACK DlgProc_Save(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		hwndHead = GetDlgItem(hwnd, IDS_ENAMHEAD);
 		hwndNameFile = GetDlgItem(hwnd, IDS_ENAMESAVE2);
 		/*Посылаем текст в текстовое поле hEdit1*/
-		SendMessage(hwndHead, WM_SETTEXT, 0, (LPARAM)"Заголовок для вопросов");
-		SendMessage(hwndNameFile, WM_SETTEXT, 0, (LPARAM)"Имя_файла_не_должно_содержать_пробелы");
+		SendMessage(hwndHead, WM_SETTEXT, 0, (LPARAM)"Заголовок Чек-Листа");
+		SendMessage(hwndNameFile, WM_SETTEXT, 0, (LPARAM)"Name.html");
 		break;
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
