@@ -189,6 +189,7 @@ public:
 
 
 bool cont_question::if_have_Q(std::string tmp) {
+	tmp = dell_str_RN(tmp);
 	question temp;
 	It = find_if(conteiner.begin(), conteiner.end(), [&tmp](question q) {
 		if (q.getQuest() == tmp) return true;
