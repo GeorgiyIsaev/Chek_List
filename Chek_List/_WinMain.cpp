@@ -143,15 +143,15 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			
 			//GetDlgItemText(hwndQ, IDN_ENEW, (LPSTR)text, 1024);
 			//SendMessage(hwndQ, WM_GETTEXT, (WPARAM)255, (LPARAM)text);
-			int sizeCHAR = 2047;
-			char* quest = new char[sizeCHAR];
-			SendMessage(hwndQ, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)quest);		
-			char* Answer = new char[sizeCHAR];
-			SendMessage(hwndTrue, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)Answer);		
-			char* AnAnswer = new char[sizeCHAR];
-			SendMessage(hwndFalsem, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)AnAnswer);
-			char* Comment = new char[sizeCHAR];
-			SendMessage(hwndComment, WM_GETTEXT, (WPARAM)sizeCHAR, (LPARAM)Comment);
+			//int sizeCHAR = 2047;
+			char* quest = new char[BIGBUFF];
+			SendMessage(hwndQ, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)quest);
+			char* Answer = new char[BIGBUFF];
+			SendMessage(hwndTrue, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)Answer);
+			char* AnAnswer = new char[BIGBUFF];
+			SendMessage(hwndFalsem, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)AnAnswer);
+			char* Comment = new char[BIGBUFF];
+			SendMessage(hwndComment, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)Comment);
 				
 			if (Box_Quest.if_have_Q(quest)) {
 				MessageBox(hwnd, "Такой вопрос уже есть", "ИНФО", MB_OK | MB_ICONINFORMATION);
@@ -160,8 +160,7 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
 				delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
 				new_quest_edit(hwnd);
-				Box_Quest.set_NameF() = "TEMPTXT";
-				Box_Quest.save_fileTXT();
+				
 			}
 			break;	
 		}

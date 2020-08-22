@@ -72,46 +72,61 @@ public:
 		return info;
 	}
 
-
+	std::string dell_str_RN(std::string temp) {
+		int p = 0; std::string tempQ = "";
+		while (temp.find("\r\n", 0) != std::string::npos) {
+			if (temp.find("\r\n", 0) != std::string::npos) {
+				p = temp.find("\r\n", 0);
+				tempQ += temp.substr(0, p);
+				temp.erase(0, p + 2);
+				tempQ += " ";
+			}
+		}
+		tempQ += temp;
+		return tempQ;
+	}
 
 	bool new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
 		question Quest_Obj;
-		//if (!if_have_Q(Quest)) {
-			Quest_Obj.setQuest(Quest);
-			
-			int p = 0;
-			while (Answer.find("\n", 0) != std::string::npos) {
-				if (Answer.find("\n", 0) != std::string::npos) {
-					p = Answer.find("\n", p)-1;
-					std::string temp = Answer.substr(0, p);
-					Answer.erase(0, p+2);
-					Quest_Obj.addAnswer(temp, true);
-				}
-			}
-			if(Answer.size()>0) Quest_Obj.addAnswer(Answer, true);
+		Quest_Obj.setQuest(dell_str_RN(Quest));
 
-			p = 0;
-			while (AnAnswer.find("\n", 0) != std::string::npos) {
-				if (AnAnswer.find("\n", 0) != std::string::npos) {
-					p = AnAnswer.find("\n", p)-1;
-					std::string temp = AnAnswer.substr(0, p);
-					AnAnswer.erase(0, p+2);
-					Quest_Obj.addAnswer(temp, false);
-				}
+		int p = 0;
+		while (Answer.find("\r\n", 0) != std::string::npos) {
+			if (Answer.find("\r\n", 0) != std::string::npos) {
+				p = Answer.find("\r\n", 0);
+				std::string temp = Answer.substr(0, p - 1);
+				temp;
+				Answer.erase(0, p + 2);
+				Quest_Obj.addAnswer(temp, true);
 			}
-			if (AnAnswer.size() > 0) Quest_Obj.addAnswer(AnAnswer, false);
-		
-			if (Comment == "Введите коментарий")Comment = "";
-			if (Comment == "Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!")Comment = "";
-			Quest_Obj.setComment(Comment);
-			if(!Quest_Obj.if_true_answers()) Quest_Obj.addAnswer("Нет верного ответа", true);
-			if (Quest_Obj.if_no_one_answer()) Quest_Obj.addAnswer("Нет верного ответа", false);
-			conteiner.push_back(Quest_Obj);
-			SORT();
-			return true;
+		}
+		if (Answer.size() > 0) Quest_Obj.addAnswer(Answer, true);
+
+		p = 0;
+		while (AnAnswer.find("\n", 0) != std::string::npos) {
+			if (AnAnswer.find("\n", 0) != std::string::npos) {
+				p = AnAnswer.find("\n", 0);
+				std::string temp = AnAnswer.substr(0, p - 1);
+				AnAnswer.erase(0, p + 2);
+				Quest_Obj.addAnswer(temp, false);
+			}
+		}
+		if (AnAnswer.size() > 0) Quest_Obj.addAnswer(AnAnswer, false);
+
+		if (Comment == "Введите коментарий")Comment = "";
+		if (Comment == "Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!")Comment = "";
+		Quest_Obj.setComment(dell_str_RN(Comment));
+		if (!Quest_Obj.if_true_answers()) Quest_Obj.addAnswer("Нет верного ответа", true);
+		if (Quest_Obj.if_no_one_answer()) Quest_Obj.addAnswer("Нет верного ответа", false);
+		conteiner.push_back(Quest_Obj);
+		SORT();
+		set_NameF() = "TEMPTXT";
+		save_fileTXT();
+		return true;
 		/*}
 		return false;*/
 	}
+
 	bool add_quest(std::string temp){
 		question Q_temp;
 		if (if_have_Q(temp)) {
