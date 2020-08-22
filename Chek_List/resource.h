@@ -25,7 +25,10 @@
 #define IDF_NAMEFILE                    1011
 #define IDS_ENAMHEAD                    1012
 #define IDR_SAVE_QUEST                  1012
+#define IDN_RESET                       1012
 #define IDS_HTML                        1013
+#define IDN_NEXT3                       1013
+#define IDN_FIND                        1013
 #define IDS_ENAMESAVE2                  1014
 #define IDR_LIST                        1014
 #define IDR_DELETE                      1015
@@ -36,7 +39,6 @@
 #define IDT_ANSWER                      1020
 #define IDT_QUEST                       1021
 #define IDT_ANSWERS                     1023
-#define IDT_ANSWER_ENTERT3              1024
 #define IDT_NEXTANSWER                  1024
 
 // Next default values for new objects

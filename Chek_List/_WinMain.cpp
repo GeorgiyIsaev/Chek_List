@@ -127,6 +127,16 @@ void new_quest_edit(HWND hwnd) {
 	SendMessage(hwndComment, WM_SETTEXT, 0, (LPARAM)"Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!");
 
 }
+void find_Quest(HWND hwnd) {
+	char* quest1 = new char[BIGBUFF];
+	SendMessage(hwndQ, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)quest1);
+	if (Box_Quest.if_have_Q(quest1)) {
+		MessageBox(hwnd, "Такой вопрос уже есть", "ИНФО", MB_OK | MB_ICONINFORMATION);
+	}
+	delete[] quest1;
+}
+
+
 BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 	switch (uMsg) //Обработчик сообщений
@@ -137,10 +147,19 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	}
 	case WM_COMMAND:	//Обработчик команд кнопок, поле ввода и т.д.
+		
 		switch (LOWORD(wParam))
-		{			
+		{
+		case IDN_FIND:
+			find_Quest(hwnd);
+			break;
+		case IDN_RESET:
+			SendMessage(hwndQ, WM_SETTEXT, 0, (LPARAM)"");
+			SendMessage(hwndTrue, WM_SETTEXT, 0, (LPARAM)"");
+			SendMessage(hwndFalsem, WM_SETTEXT, 0, (LPARAM)"");
+			SendMessage(hwndComment, WM_SETTEXT, 0, (LPARAM)"");
+			break;		
 		case IDN_NEXT:
-			
 			//GetDlgItemText(hwndQ, IDN_ENEW, (LPSTR)text, 1024);
 			//SendMessage(hwndQ, WM_GETTEXT, (WPARAM)255, (LPARAM)text);
 			//int sizeCHAR = 2047;
@@ -152,7 +171,7 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			SendMessage(hwndFalsem, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)AnAnswer);
 			char* Comment = new char[BIGBUFF];
 			SendMessage(hwndComment, WM_GETTEXT, (WPARAM)BIGBUFF, (LPARAM)Comment);
-				
+
 			if (Box_Quest.if_have_Q(quest)) {
 				MessageBox(hwnd, "Такой вопрос уже есть", "ИНФО", MB_OK | MB_ICONINFORMATION);
 			}
@@ -160,9 +179,9 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
 				delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
 				new_quest_edit(hwnd);
-				
+
 			}
-			break;	
+			break;
 		}
 		break;
 	case WM_CLOSE:		//Обработка закрытия окна пользователя
