@@ -301,8 +301,7 @@ bool cont_question::read_fileTXT() {
 				Q_temp.setComment(temp.substr(temp.find(" ŒÃ≈Õ“¿–»…: ") + 12));
 				std::cout << "+ÍÓÏ \n ";
 			}			
-		}
-		system("pause");
+		}	
 		conteiner.push_back(Q_temp);
 		to_file.close();
 		 return true;

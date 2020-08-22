@@ -51,6 +51,9 @@ BOOL CALLBACK DlgProc_Save(HWND, UINT, WPARAM, LPARAM);
 // Функция WinAPI для точки входа в программу
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	Box_Quest.set_NameF() = "TEMPTXT.txt";
+	Box_Quest.read_fileTXT();
+	
 	DialogBoxParam(hInstance, MAKEINTRESOURCE(IDM_DIALOG), 0, (DlgProc), 0);
 	return 0;
 }
@@ -156,7 +159,9 @@ BOOL CALLBACK DlgProc_new(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			else {
 				Box_Quest.new_question(quest, Answer, AnAnswer, Comment);
 				delete[] quest; delete[] Answer; delete[] AnAnswer; delete[] Comment;
-				new_quest_edit(hwnd);			
+				new_quest_edit(hwnd);
+				Box_Quest.set_NameF() = "TEMPTXT";
+				Box_Quest.save_fileTXT();
 			}
 			break;	
 		}
