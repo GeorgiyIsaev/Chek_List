@@ -180,9 +180,9 @@ bool cont_question::new_question(std::string Quest, std::string Answer, std::str
 	Quest_Obj.setQuest(dell_str_RN(Quest));
 
 	int p = 0;
-	while (Answer.find("\r\n", 0) != std::string::npos) {
-		if (Answer.find("\r\n", 0) != std::string::npos) {
-			p = Answer.find("\r\n", 0);
+	while (Answer.find("\n", 0) != std::string::npos) {
+		if (Answer.find("\n", 0) != std::string::npos) {
+			p = Answer.find("\n", 0);
 			std::string temp = Answer.substr(0, p - 1);
 			temp;
 			Answer.erase(0, p + 1);
