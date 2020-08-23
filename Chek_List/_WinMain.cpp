@@ -233,7 +233,7 @@ void reset_list_question(HWND hwnd) {
 	SendMessage(hList, LB_RESETCONTENT, 0, 0);
 	hList = GetDlgItem(hwnd, IDR_LIST);
 	for (int i = 0; i < Box_Quest.SIZE_BOX(); i++) {		
-		SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)Box_Quest.print_quest(i).c_str());
+		SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)Box_Quest.print_quest_listbox(i).c_str());
 	}
 }
 BOOL CALLBACK DlgProc_Read(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -283,10 +283,10 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		strcpy_s(quest, sizeCHAR, Box_Quest.getQuest().c_str());
 		SendMessage(hwndQ, WM_SETTEXT, 0, (LPARAM)quest);
 		char* Answer = new char[sizeCHAR];
-		strcpy_s(Answer, sizeCHAR, Box_Quest.getAnswer().c_str());
+		strcpy_s(Answer, sizeCHAR, Box_Quest.getFullAnswer().c_str());
 		SendMessage(hwndTrue, WM_SETTEXT, 0, (LPARAM)Answer);
 		char* AnAnswer = new char[sizeCHAR];
-		strcpy_s(AnAnswer, sizeCHAR, Box_Quest.getAnAnswer().c_str());
+		strcpy_s(AnAnswer, sizeCHAR, Box_Quest.getFullAnAnswer().c_str());
 		SendMessage(hwndFalsem, WM_SETTEXT, 0, (LPARAM)AnAnswer);
 		char* Comment = new char[sizeCHAR];
 		strcpy_s(Comment, sizeCHAR, Box_Quest.getComment().c_str());
@@ -321,8 +321,7 @@ BOOL CALLBACK DlgProc_Redact(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			EndDialog(hwnd, 0);
 			return TRUE;
 			break;
-		}
-		//InvalidateRect(NULL, NULL, TRUE);
+		}		
 		break;
 	case WM_CLOSE:		//Обработка закрытия окна пользователя
 		EndDialog(hwnd, 0);
@@ -344,13 +343,13 @@ void reload_quest_test(HWND hwnd) {
 	strcpy_s(quest, BIGBUFF, Box_Quest.getQuest().c_str());
 	SendMessage(hwndQuestTest, WM_SETTEXT, 0, (LPARAM)quest);
 	/*Загружаем ответы*/
-	Box_Quest.sort_answer_IT();
+	Box_Quest.test_unsort_answer_IT();
 
 	InvalidateRect(hList, NULL, TRUE); //очистить лист
 	h_Re_read = GetModuleHandle(NULL);
 	SendMessage(hListAnswer, LB_RESETCONTENT, 0, 0);
 	hListAnswer = GetDlgItem(hwnd, IDT_ANSWER);
-	for (int i = 0; i < Box_Quest.size_answers(); i++) {
+	for (int i = 0; i < Box_Quest.test_count_FULL_answers(); i++) {
 		SendMessage(hListAnswer, LB_ADDSTRING, 0, (LPARAM)Box_Quest.getAnswer_val(i).c_str());
 	}
 	delete[] quest;
@@ -384,10 +383,10 @@ BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				return TRUE;
 			}
 			info = new char[BIGBUFF];	
-			if (Box_Quest.count_RIGHT_answer() == cSelItemsInBuffer) {
+			if (Box_Quest.test_count_RIGHT_answer() == cSelItemsInBuffer) {
 				for (int i = cSelItemsInBuffer - 1; i >= 0; i--)
 				{
-					if (!Box_Quest.if_this_true_int(aSelItems[i])) {
+					if (!Box_Quest.if_this_int_answer_true(aSelItems[i])) {
 						like = false;
 						break;
 					}
@@ -397,12 +396,12 @@ BOOL CALLBACK DlgProc_TECT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			else like = false;
 			
 			if (like) {				
-				strcpy_s(info, BIGBUFF, Box_Quest.strInfoQuest("Ваш ответ ВЕРНЫЙ!\r\n").c_str());
+				strcpy_s(info, BIGBUFF, Box_Quest.testGet_strInfoQuest("Ваш ответ ВЕРНЫЙ!\r\n").c_str());
 				MessageBox(hwnd, info, "Правильный ответ!", NULL);
 				Box_val.right_answer();
 			}
 			else {
-				strcpy_s(info, BIGBUFF, Box_Quest.strInfoQuest("Ваш ответ НЕ верный").c_str());
+				strcpy_s(info, BIGBUFF, Box_Quest.testGet_strInfoQuest("Ваш ответ НЕ верный").c_str());
 				MessageBox(hwnd, info, "Ваш ответ НЕ верный", MB_OK | MB_ICONHAND);
 			}
 			delete[] info;
