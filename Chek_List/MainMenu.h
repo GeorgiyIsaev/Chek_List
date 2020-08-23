@@ -165,46 +165,6 @@ std::string cont_question::dell_str_RN(std::string temp) {
 	tempQ += temp;
 	return tempQ;
 }
-bool cont_question::new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
-	question Quest_Obj;
-	Quest_Obj.setQuest(dell_str_RN(Quest));
-
-	int p = 0;
-	while (Answer.find("\r\n", 0) != std::string::npos) {
-		if (Answer.find("\r\n", 0) != std::string::npos) {
-			p = Answer.find("\r\n", 0);
-			std::string temp = Answer.substr(0, p - 1);
-			temp;
-			Answer.erase(0, p + 2);
-			Quest_Obj.addAnswer(temp, true);
-		}
-	}
-	if (Answer.size() > 0) Quest_Obj.addAnswer(Answer, true);
-
-	p = 0;
-	while (AnAnswer.find("\n", 0) != std::string::npos) {
-		if (AnAnswer.find("\n", 0) != std::string::npos) {
-			p = AnAnswer.find("\n", 0);
-			std::string temp = AnAnswer.substr(0, p - 1);
-			AnAnswer.erase(0, p + 2);
-			Quest_Obj.addAnswer(temp, false);
-		}
-	}
-	if (AnAnswer.size() > 0) Quest_Obj.addAnswer(AnAnswer, false);
-
-	if (Comment == "Введите коментарий")Comment = "";
-	if (Comment == "Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!")Comment = "";
-	Quest_Obj.setComment(dell_str_RN(Comment));
-	if (!Quest_Obj.if_true_answers()) Quest_Obj.addAnswer("Нет верного ответа", true);
-	if (Quest_Obj.if_no_one_answer()) Quest_Obj.addAnswer("Нет верного ответа", false);
-	conteiner.push_back(Quest_Obj);
-	SORT();
-	set_NameF() = "TEMPTXT";
-	save_fileTXT();
-	return true;
-	/*}
-	return false;*/
-}
 bool cont_question::if_have_Q(std::string tmp) {
 	tmp = dell_str_RN(tmp);
 	question temp;
@@ -215,7 +175,45 @@ bool cont_question::if_have_Q(std::string tmp) {
 	if (It != conteiner.end()) return true;
 	else return false;
 }
+bool cont_question::new_question(std::string Quest, std::string Answer, std::string AnAnswer, std::string Comment) {
+	question Quest_Obj;
+	Quest_Obj.setQuest(dell_str_RN(Quest));
 
+	int p = 0;
+	while (Answer.find("\r\n", 0) != std::string::npos) {
+		if (Answer.find("\r\n", 0) != std::string::npos) {
+			p = Answer.find("\r\n", 0);
+			std::string temp = Answer.substr(0, p - 1);
+			temp;
+			Answer.erase(0, p + 1);
+			Quest_Obj.addAnswer(temp, true);
+		}
+	}
+	if (Answer.size() > 0) Quest_Obj.addAnswer(Answer, true);
+
+	p = 0;
+	while (AnAnswer.find("\n", 0) != std::string::npos) {
+		if (AnAnswer.find("\n", 0) != std::string::npos) {
+			p = AnAnswer.find("\n", 0);
+			std::string temp = AnAnswer.substr(0, p - 1);
+			AnAnswer.erase(0, p + 1);
+			Quest_Obj.addAnswer(temp, false);
+		}
+	}
+	if (AnAnswer.size() > 0) Quest_Obj.addAnswer(AnAnswer, false);
+
+	if (Comment == "Введите коментарий")Comment = "";
+	if (Comment == "Введите коментарий\r\n\r\n (*Не обязательное поле), можно оставить пустым!")Comment = "";
+	Quest_Obj.setComment(dell_str_RN(Comment));
+	if (Quest_Obj.if_not_true_answers()) Quest_Obj.addAnswer("Нет верного ответа", true);
+	if (Quest_Obj.if_only_one_answer()) Quest_Obj.addAnswer("Нет верного ответа", false);
+	conteiner.push_back(Quest_Obj);
+	SORT();
+	set_NameF() = "TEMPTXT";
+	save_fileTXT();
+	return true;
+
+}
 
 
 /*************************************/

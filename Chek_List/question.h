@@ -53,15 +53,17 @@ public:
 		if (Answer.at(i).if_true() ) return true;		
 		return false;
 	}
-	bool if_true_answers() {
+	bool if_not_true_answers() {
 		int i = Answer.size();
+		int countRight = 0;
 		while (i--) {
-			if (Answer.at(i).if_true()) return true;
+			if (Answer.at(i).if_true()) countRight++;
 		}
-		return false;
+		if(countRight>=1) return false;
+		else return true;		
 	}
-	bool if_no_one_answer() {
-		if (Answer.size() >= 2) return false;
+	bool if_only_one_answer() {
+		if (Answer.size() >= 1) return false;
 		return true;
 	}
 
